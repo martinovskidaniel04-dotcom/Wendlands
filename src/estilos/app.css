@@ -236,6 +236,14 @@
   scrollbar-width: none;
 }
 
+.ferramentas__lista,
+.ferramentas__paineis {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
 .ferramentas .btn-icone {
   width: 42px;
   height: 42px;
@@ -1581,10 +1589,25 @@
     justify-content: flex-start;
     gap: 3px;
     padding: 5px 8px;
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: hidden;
     border-bottom: 1px solid var(--borda);
     background: var(--painel);
+  }
+
+  /* As ferramentas rolam; os botões que abrem os painéis ficam sempre à vista. */
+  .ferramentas__lista {
+    flex: 1;
+    min-width: 0;
+    flex-direction: row;
+    gap: 3px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ferramentas__paineis {
+    flex: none;
+    flex-direction: row;
+    gap: 3px;
   }
 
   .ferramentas .btn-icone {

@@ -107,11 +107,15 @@ export function Mapa({ cena, ferramenta, opcoes, camadas, selecao, aoSelecionar,
     const chave = `${cena.id}:${cena.largura}x${cena.altura}`;
     if (enquadrada.current !== chave) {
       enquadrada.current = chave;
-      enquadrar();
+      const inteiro = ajustarATela(cena.largura, cena.altura, tamanho.largura, tamanho.altura, 16);
+      // Em telas estreitas o mapa inteiro deixaria os tokens pequenos demais para o toque:
+      // começa mais perto, centrado, e o botão "ajustar à tela" mostra tudo.
+      const zoom = tamanho.largura < 620 ? Math.max(inteiro.zoom, 0.4) : inteiro.zoom;
+      setCamera({ zoom, x: cena.largura / 2 - tamanho.largura / (2 * zoom), y: cena.altura / 2 - tamanho.altura / (2 * zoom) });
       setMedicao(null);
       setInicioMedicao(null);
     }
-  }, [cena.id, cena.largura, cena.altura, tamanho.largura, enquadrar]);
+  }, [cena.id, cena.largura, cena.altura, tamanho.largura, tamanho.altura]);
 
   const pontoTela = (e: { clientX: number; clientY: number }): Ponto => {
     const r = refSvg.current!.getBoundingClientRect();
@@ -725,6 +729,8 @@ const TokenVisual = memo(function TokenVisual({ token: t, ficha, raio, seleciona
       aria-pressed={selecionado}
       opacity={mestre && escondido ? 0.62 : deslocamento ? 0.85 : 1}
     >
+      {/* Área de toque mínima, para tokens pequenos na tela. */}
+      <circle r={Math.max(raio, 20 / zoom)} fill="transparent" pointerEvents="all" />
       {selecionado && (
         <>
           <circle r={raio + 5 / zoom + borda * 0.4} fill="none" stroke="#9fe0de" strokeOpacity={0.35} strokeWidth={6 / zoom} />

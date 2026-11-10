@@ -136,7 +136,7 @@ export function Mesa({ aoAbrirFicha }: { aoAbrirFicha(fichaId: Id, secao?: 'inve
           )}
         </button>
       </div>
-      <div className="mesa__dir-corpo" role="tabpanel">
+      <div className="mesa__dir-corpo" role="tabpanel" key={aba}>
         {aba === 'personagem' ? (
           <Inspetor
             cena={cena}
@@ -161,6 +161,7 @@ export function Mesa({ aoAbrirFicha }: { aoAbrirFicha(fichaId: Id, secao?: 'inve
   return (
     <div className={`mesa${mostrarEsq ? '' : ' mesa--sem-esq'}${mostrarDir ? '' : ' mesa--sem-dir'}${movel ? ' mesa--movel' : ''}`} style={estilo}>
       <nav className="ferramentas" aria-label="Ferramentas do mapa">
+        <div className="ferramentas__lista">
         {FERRAMENTAS.filter((f) => !f.mestre || ehMestre).map((f) => (
           <BotaoIcone
             key={f.id}
@@ -175,7 +176,9 @@ export function Mesa({ aoAbrirFicha }: { aoAbrirFicha(fichaId: Id, secao?: 'inve
             }}
           />
         ))}
+        </div>
         <span className="ferramentas__divisor" aria-hidden="true" />
+        <div className="ferramentas__paineis">
         <BotaoIcone
           icone="camadas"
           rotulo="Cenas, camadas e iniciativa"
@@ -198,6 +201,7 @@ export function Mesa({ aoAbrirFicha }: { aoAbrirFicha(fichaId: Id, secao?: 'inve
           onClick={() => (movel ? setGaveta(gaveta === 'dados' ? null : 'dados') : setBandejaAberta(!bandejaAberta))}
         />
         {ehMestre && cena && <BotaoIcone icone="engrenagem" rotulo="Configurar a cena (grade, escala, mapa)" tamanho={21} onClick={() => setConfigurando(cena.id)} />}
+        </div>
       </nav>
 
       {mostrarEsq && (

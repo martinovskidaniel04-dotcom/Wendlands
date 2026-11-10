@@ -53,6 +53,7 @@ body {
   /* Algarismos alinhados e tabulares também na serifada (evita 0 parecido com "o"). */
   font-variant-numeric: lining-nums tabular-nums;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
   overflow: hidden;
 }
 
