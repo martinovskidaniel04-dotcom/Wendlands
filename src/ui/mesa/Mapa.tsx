@@ -505,9 +505,9 @@ export function Mapa({ cena, ferramenta, opcoes, camadas, selecao, aoSelecionar,
         onContextMenu={(e) => e.preventDefault()}
       >
         <defs>
-          <pattern id="hachura-nevoa" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="10" height="10" fill="#0b0d10" fillOpacity=".5" />
-            <rect width="2" height="10" fill="#9aa3ad" fillOpacity=".22" />
+          <pattern id="hachura-nevoa" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform={`rotate(45) scale(${1 / camera.zoom})`}>
+            <rect width="10" height="10" fill="#0b0d10" fillOpacity=".62" />
+            <rect width="2.500" height="10" fill="#b7c0ca" fillOpacity=".3" />
           </pattern>
           <pattern id="textura-nevoa" width="160" height="160" patternUnits="userSpaceOnUse">
             <rect width="160" height="160" fill="#1b1e23" />

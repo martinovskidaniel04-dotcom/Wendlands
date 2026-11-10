@@ -160,12 +160,14 @@ function SecaoCenas({ cenaVistaId, aoVerCena, aoConfigurarCena }: Pick<Props, 'c
                 ) : (
                   <button type="button" className="cena__botao" aria-current={vista ? 'true' : undefined} onClick={() => aoVerCena(cena.id)}>
                     <Miniatura cena={cena} />
-                    <span className="cena__nome">{cena.nome}</span>
-                    {ativa && ehMestre && (
-                      <span className="cena__ativa" title="Cena ativa: é a que os jogadores veem">
-                        ativa
-                      </span>
-                    )}
+                    <span className="cena__texto">
+                      <span className="cena__nome">{cena.nome}</span>
+                      {ativa && ehMestre && (
+                        <span className="cena__ativa" title="Cena ativa: é a que os jogadores veem">
+                          ativa para os jogadores
+                        </span>
+                      )}
+                    </span>
                   </button>
                 )}
                 {ehMestre && renomeando?.id !== cena.id && (

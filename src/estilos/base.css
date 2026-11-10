@@ -50,7 +50,8 @@ body {
   font-family: var(--sans);
   font-size: 14px;
   line-height: 1.45;
-  font-variant-numeric: tabular-nums;
+  /* Algarismos alinhados e tabulares também na serifada (evita 0 parecido com "o"). */
+  font-variant-numeric: lining-nums tabular-nums;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
 }
