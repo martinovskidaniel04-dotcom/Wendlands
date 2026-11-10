@@ -271,11 +271,12 @@ export class ServidorMesa {
         throw new ErroHttp(400, 'JSON inválido.');
       }
       const bruta = (corpo as { campanha?: unknown } | null)?.campanha;
-      // As imagens são enviadas depois, uma a uma: a campanha entra sem referências a arquivos ausentes.
-      if (typeof bruta === 'object' && bruta !== null) (bruta as { arquivos?: unknown }).arquivos = [];
       const v = validarCampanha(bruta);
       if (!v.ok) throw new ErroHttp(400, v.erro);
+      // Os bytes das imagens chegam depois, uma a uma (PUT /arquivos); até lá, pedir uma delas responde 404.
+      // Versões de mapa preparadas numa sessão anterior são descartadas: o mestre gera novas.
       v.campanha.pendencias = [];
+      v.campanha.arquivos = v.campanha.arquivos.filter((a) => a.uso !== 'mapa-jogadores');
       for (const cena of v.campanha.cenas) cena.mapaJogadores = null;
       const { sala, tokenMestre } = Sala.criar(v.campanha, this.opcoes.opcoesSala);
       this.salas.set(sala.id, sala);
