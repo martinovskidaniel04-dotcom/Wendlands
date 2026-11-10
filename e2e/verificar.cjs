@@ -249,6 +249,51 @@ const zoomAtual = async (pagina) => Number((await pagina.locator('.mapa__zoom-va
   await p.getByRole('button', { name: 'Confirmar', exact: true }).click();
   conferir('E. confirmar aplica e consome a ação principal', (await p.locator('.pendencia').count()) === 0 && (await p.locator('.ficha-acao--usada', { hasText: 'Ação principal' }).count()) === 1);
 
+  // ── Falha de cota: aviso persistente, sem perda silenciosa ──
+  await p.evaluate(() => {
+    const original = IDBObjectStore.prototype.put;
+    window.__restaurarPut = () => (IDBObjectStore.prototype.put = original);
+    IDBObjectStore.prototype.put = function () {
+      throw new DOMException('cota excedida (simulada)', 'QuotaExceededError');
+    };
+  });
+  await p.getByLabel('Expressão de dados').fill('1d4');
+  await p.getByRole('button', { name: /^Rolar 1d4/ }).click();
+  await p.waitForSelector('.faixa--erro');
+  const faixa = await p.locator('.faixa--erro').innerText();
+  conferir('Armazenamento cheio: aviso persistente explica e oferece backup', /armazenamento do navegador está cheio/i.test(faixa) && /Exportar backup/.test(faixa) && (await p.locator('.salvamento--erro').count()) === 1, faixa.slice(0, 80));
+  await p.evaluate(() => window.__restaurarPut());
+  await p.getByRole('button', { name: 'Tentar salvar de novo' }).click();
+  await p.waitForSelector('.faixa--erro', { state: 'detached' });
+  const salvou = await p.waitForSelector('.salvamento--salvo', { timeout: 5000 }).then(() => true, () => false);
+  conferir('Depois de liberar espaço, salvar de novo limpa o aviso e grava', salvou);
+
+  // ── H. Contraste do texto (WCAG AA 4,5:1) nos painéis ──
+  const contrastes = await p.evaluate(() => {
+    const lum = (rgb) => {
+      const [r, g, b] = rgb.map((v) => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const cor = (texto) => (texto.match(/[\d.]+/g) || []).slice(0, 4).map(Number);
+    const fundoDe = (el) => {
+      for (let e = el; e; e = e.parentElement) {
+        const c = cor(getComputedStyle(e).backgroundColor);
+        if (c.length >= 3 && (c.length === 3 || c[3] > 0.95)) return c.slice(0, 3);
+      }
+      return [17, 19, 22];
+    };
+    const piores = [];
+    for (const el of document.querySelectorAll('.nota, .campo__dica, .campo__rotulo, .hist__hora, .hist__texto, .secao__titulo, .eco__situacao, .item-ficha__sub, .persona__sub, .derivados, .aba, .btn, .ficha-acao')) {
+      if (!el.offsetParent || !el.textContent.trim() || el.closest(':disabled')) continue;
+      const frente = cor(getComputedStyle(el).color).slice(0, 3);
+      const l1 = lum(frente), l2 = lum(fundoDe(el));
+      const razao = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+      if (razao < 4.5) piores.push(`${el.className.split(' ')[0]} ${razao.toFixed(2)}`);
+    }
+    return piores;
+  });
+  conferir('H. textos dos painéis com contraste de pelo menos 4,5:1', contrastes.length === 0, [...new Set(contrastes)].slice(0, 6).join(', '));
+
   // ── H. Acessibilidade básica ──
   const semNome = await p.evaluate(() =>
     [...document.querySelectorAll('button, [role="button"], input, select, textarea')]

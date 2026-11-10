@@ -708,7 +708,7 @@ const TokenVisual = memo(function TokenVisual({ token: t, ficha, raio, seleciona
   const borda = Math.max(2.5, raio * 0.1);
   const interno = raio - borda * 1.6;
   const escondido = t.oculto || encoberto;
-  const mostrarNome = raio * 2 * zoom >= 26;
+  const mostrarNome = raio * 2 * zoom >= 22;
   let descricao = `Token ${t.nome}, coluna ${celula[0] + 1}, linha ${celula[1] + 1}`;
   if (ficha && !ficha.visaoParcial) {
     const d = derivar(ficha);
