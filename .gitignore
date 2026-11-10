@@ -1,0 +1,8 @@
+node_modules
+dist
+dist-servidor
+dados-servidor
+*.tsbuildinfo
+.DS_Store
+*.local
+pacote-do-mestre/
